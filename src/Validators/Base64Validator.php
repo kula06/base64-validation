@@ -6,6 +6,7 @@ namespace Crazybooot\Base64Validation\Validators;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\Concerns\ValidatesAttributes;
 use Symfony\Component\HttpFoundation\File\File;
+use Illuminate\Http\UploadedFile;
 use function base64_decode;
 use function explode;
 use function file_put_contents;
@@ -161,12 +162,15 @@ class Base64Validator
     }
 
     /**
-     * @param string $value
+     * @param mixed $value
      *
-     * @return File
+     * @return File|UploadedFile
      */
-    protected function convertToFile(string $value): File
+    protected function convertToFile($value)
     {
+        if ($value instanceof UploadedFile)
+            return $value;
+
         if (strpos($value, ';base64') !== false) {
             [, $value] = explode(';', $value);
             [, $value] = explode(',', $value);
